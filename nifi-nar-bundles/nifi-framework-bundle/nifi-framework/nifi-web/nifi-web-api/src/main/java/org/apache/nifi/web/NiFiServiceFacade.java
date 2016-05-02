@@ -77,6 +77,7 @@ import org.apache.nifi.web.api.entity.RemoteProcessGroupEntity;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -220,6 +221,17 @@ public interface NiFiServiceFacade {
      * @return snapshot
      */
     ConfigurationSnapshot<ProcessorDTO> setProcessorAnnotationData(Revision revision, String processorId, String annotationData);
+
+    /**
+     * Sets the annotation data for a processor.
+     *
+     * @param revision the revision to compare with current base revision
+     * @param processorId the id of the processor to update
+     * @param properties the properties of the processor to update
+     *
+     * @return snapshot
+     */
+    ConfigurationSnapshot<ProcessorDTO> setProcessorProperties(Revision revision, String processorId, Map<String,String> properties);
 
     /**
      * Returns the process group status.

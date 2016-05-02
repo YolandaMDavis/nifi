@@ -1279,6 +1279,31 @@ public class StandardNiFiServiceFacade implements NiFiServiceFacade {
     }
 
     @Override
+    public ConfigurationSnapshot<ProcessorDTO> setProcessorProperties(final Revision revision, final String processorId, final Map<String,String> properties) {
+        return optimisticLockingManager.configureFlow(revision, new ConfigurationRequest<ProcessorDTO>() {
+            @Override
+            public ConfigurationResult<ProcessorDTO> execute() {
+                // create the processor config
+                final ProcessorConfigDTO config = new ProcessorConfigDTO();
+                config.setProperties(properties);
+
+                // create the processor dto
+                final ProcessorDTO processorDTO = new ProcessorDTO();
+                processorDTO.setId(processorId);
+                processorDTO.setConfig(config);
+
+                // update the processor configuration
+                final ProcessorNode processor = processorDAO.updateProcessor(processorDTO);
+
+                // save the flow
+                controllerFacade.save();
+
+                return new StandardConfigurationResult<>(false, dtoFactory.createProcessorDto(processor));
+            }
+        });
+    }
+
+    @Override
     public ConfigurationSnapshot<ControllerServiceDTO> createControllerService(final Revision revision, final ControllerServiceDTO controllerServiceDTO) {
         return optimisticLockingManager.configureFlow(revision, new ConfigurationRequest<ControllerServiceDTO>() {
             @Override
