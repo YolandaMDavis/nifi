@@ -1574,7 +1574,7 @@ public class StandardNiFiServiceFacade implements NiFiServiceFacade {
     }
 
     @Override
-    public ProcessorEntity setProcessorAnnotationData(final Revision revision, final String processorId, final String annotationData) {
+    public ProcessorEntity updateProcessor(final Revision revision, final String processorId, final String annotationData, final Map<String, String> properties) {
         final NiFiUser user = NiFiUserUtils.getNiFiUser();
         final String modifier = user.getUserName();
 
@@ -1584,6 +1584,7 @@ public class StandardNiFiServiceFacade implements NiFiServiceFacade {
                 // create the processor config
                 final ProcessorConfigDTO config = new ProcessorConfigDTO();
                 config.setAnnotationData(annotationData);
+                config.setProperties(properties);
 
                 // create the processor dto
                 final ProcessorDTO processorDTO = new ProcessorDTO();

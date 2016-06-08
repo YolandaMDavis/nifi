@@ -305,10 +305,10 @@ public interface NiFiServiceFacade {
      * @param revision the revision to compare with current base revision
      * @param processorId the id of the processor to update
      * @param annotationData the annotation data
-     *
+     * @param properties processor properties
      * @return snapshot
      */
-    ProcessorEntity setProcessorAnnotationData(Revision revision, String processorId, String annotationData);
+    ProcessorEntity updateProcessor(Revision revision, String processorId, String annotationData, Map<String, String> properties);
 
     /**
      * Returns the process group status.
