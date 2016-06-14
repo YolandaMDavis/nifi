@@ -18,7 +18,10 @@
 package org.apache.nifi.processors.standard.util;
 
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Test;
@@ -78,12 +81,35 @@ public class TestTransformFactory {
         assertTrue(transform instanceof CardinalityTransform);
     }
 
+    @Test
     public void testGetInvalidTransformWithNoSpec() {
         try{
             TransformFactory.getTransform("jolt-transform-chain",null);
         }catch (Exception e){
-            assertTrue(e.toString().equals("JOLT Chainr expects a JSON array of objects - Malformed spec."));
+            assertTrue(e.getLocalizedMessage().equals("JOLT Chainr expects a JSON array of objects - Malformed spec."));
         }
     }
+
+    @Test
+    public void testGetCustomTransformation() throws Exception{
+        final String chainrSpec = new String(Files.readAllBytes(Paths.get("src/test/resources/TestTransformFactory/chainrSpec.json")));
+        Path jarFilePath = Paths.get("src/test/resources/TestTransformFactory/TestCustomJoltTransform.jar");
+        URL[] urlPaths = new URL[1];
+        urlPaths[0] = jarFilePath.toUri().toURL();
+        ClassLoader classLoader = new URLClassLoader(urlPaths,this.getClass().getClassLoader());
+        TransformFactory.getTransform(classLoader,"TestCustomJoltTransform",JsonUtils.jsonToObject(chainrSpec));
+    }
+
+    @Test
+    public void testGetCustomTransformationNotFound() throws Exception{
+        final String chainrSpec = new String(Files.readAllBytes(Paths.get("src/test/resources/TestTransformFactory/chainrSpec.json")));
+        try {
+            TransformFactory.getTransform(this.getClass().getClassLoader(), "TestCustomJoltTransform", chainrSpec);
+        }catch (ClassNotFoundException cnf){
+            assertTrue(cnf.getLocalizedMessage().equals("TestCustomJoltTransform"));
+        }
+
+    }
+
 
 }

@@ -78,7 +78,7 @@ public class CustomUIUtils {
 
             @Override
             public Revision getRevision() {
-                return new Revision(revision, clientId);
+                return new Revision(revision, clientId,processorId);
             }
         };
     }

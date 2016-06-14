@@ -17,12 +17,15 @@
 
 package org.apache.nifi.processors.standard.util;
 
+import java.lang.reflect.Constructor;
+
 import com.bazaarvoice.jolt.CardinalityTransform;
 import com.bazaarvoice.jolt.Chainr;
 import com.bazaarvoice.jolt.Defaultr;
 import com.bazaarvoice.jolt.Removr;
 import com.bazaarvoice.jolt.Shiftr;
 import com.bazaarvoice.jolt.Sortr;
+import com.bazaarvoice.jolt.SpecDriven;
 import com.bazaarvoice.jolt.Transform;
 
 public class TransformFactory {
@@ -40,6 +43,17 @@ public class TransformFactory {
             return new Sortr();
         } else {
             return Chainr.fromSpec(specJson);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Transform getTransform(final ClassLoader classLoader, final String customTransform, final Object specJson) throws Exception {
+        final Class clazz = classLoader.loadClass(customTransform);
+        if(SpecDriven.class.isAssignableFrom(clazz)){
+            final Constructor constructor = clazz.getConstructor(Object.class);
+            return (Transform) constructor.newInstance(specJson);
+        }else{
+            return (Transform) clazz.newInstance();
         }
     }
 

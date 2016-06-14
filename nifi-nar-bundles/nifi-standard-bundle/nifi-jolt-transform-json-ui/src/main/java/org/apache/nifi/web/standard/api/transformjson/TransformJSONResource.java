@@ -24,6 +24,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.nifi.processors.standard.util.StandardUtils;
 import org.apache.nifi.processors.standard.util.TransformFactory;
 import org.apache.nifi.web.standard.api.AbstractStandardResource;
 import org.apache.nifi.web.standard.api.transformjson.dto.JoltSpecificationDTO;
@@ -54,9 +55,16 @@ public class TransformJSONResource extends AbstractStandardResource {
     public Response validateSpec(JoltSpecificationDTO specificationDTO) {
 
         Object specJson = getSpecificationJsonObject(specificationDTO.getSpecification());
-
+        String transform = specificationDTO.getTransform();
         try {
-            TransformFactory.getTransform(specificationDTO.getTransform(), specJson);
+
+            if(transform.equals("jolt-transform-custom")){
+                ClassLoader customClassLoader = StandardUtils.getCustomClassLoader(specificationDTO.getModules(),this.getClass().getClassLoader());
+                TransformFactory.getTransform(customClassLoader,specificationDTO.getCustomClass(), specJson);
+            }else {
+                TransformFactory.getTransform(specificationDTO.getTransform(), specJson);
+            }
+
         }catch(final Exception e){
             logger.error("Validation Failed - " + e.toString());
             return Response.ok(new ValidationDTO(false,"Validation Failed - Please verify the provided specification.")).build();
@@ -71,9 +79,18 @@ public class TransformJSONResource extends AbstractStandardResource {
     public Response executeSpec(JoltSpecificationDTO specificationDTO) {
 
         Object specJson = getSpecificationJsonObject(specificationDTO.getSpecification());
+        String transformName = specificationDTO.getTransform();
 
         try {
-            Transform transform  = TransformFactory.getTransform(specificationDTO.getTransform(), specJson);
+            Transform transform;
+
+            if(transformName.equals("jolt-transform-custom")) {
+                ClassLoader customClassLoader = StandardUtils.getCustomClassLoader(specificationDTO.getModules(),this.getClass().getClassLoader());
+                transform = TransformFactory.getTransform(customClassLoader,specificationDTO.getCustomClass(), specJson);
+            }else{
+                transform = TransformFactory.getTransform(specificationDTO.getTransform(), specJson);
+            }
+
             Object inputJson = JsonUtils.jsonToObject(specificationDTO.getInput());
             return Response.ok(JsonUtils.toJsonString(transform.transform(inputJson))).build();
 
