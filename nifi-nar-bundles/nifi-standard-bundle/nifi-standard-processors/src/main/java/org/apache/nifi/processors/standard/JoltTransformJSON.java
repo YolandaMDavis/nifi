@@ -17,6 +17,8 @@
 package org.apache.nifi.processors.standard;
 
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -51,7 +53,7 @@ import org.apache.nifi.processor.exception.ProcessException;
 import org.apache.nifi.processor.io.InputStreamCallback;
 import org.apache.nifi.processor.io.OutputStreamCallback;
 import org.apache.nifi.processor.util.StandardValidators;
-import org.apache.nifi.processors.standard.util.StandardUtils;
+import org.apache.nifi.util.file.classloader.ClassLoaderUtils;
 import org.apache.nifi.processors.standard.util.TransformFactory;
 import org.apache.nifi.stream.io.ByteArrayInputStream;
 import org.apache.nifi.stream.io.StreamUtils;
@@ -179,7 +181,7 @@ public class JoltTransformJSON extends AbstractProcessor {
             try {
 
                 if(modulePath != null) {
-                    customClassLoader = StandardUtils.getCustomClassLoader(modulePath, this.getClass().getClassLoader());
+                    customClassLoader = ClassLoaderUtils.getCustomClassLoader(modulePath, this.getClass().getClassLoader(), getJarFilenameFilter());
                 }
 
                 Object specJson = SORTR.getValue().equals(transform) ? null : JsonUtils.jsonToObject(specValue, DEFAULT_CHARSET);
@@ -255,7 +257,9 @@ public class JoltTransformJSON extends AbstractProcessor {
             return;
 
         }finally {
-            Thread.currentThread().setContextClassLoader(originalContextClassLoader);
+            if(customClassLoader != null && originalContextClassLoader != null) {
+                Thread.currentThread().setContextClassLoader(originalContextClassLoader);
+            }
         }
 
         FlowFile transformed = session.write(original, new OutputStreamCallback() {
@@ -280,7 +284,7 @@ public class JoltTransformJSON extends AbstractProcessor {
             Object specJson = null;
 
             if(context.getProperty(MODULES).isSet()){
-                customClassLoader = StandardUtils.getCustomClassLoader(context.getProperty(MODULES).getValue(),this.getClass().getClassLoader());
+                customClassLoader = ClassLoaderUtils.getCustomClassLoader(context.getProperty(MODULES).getValue(),this.getClass().getClassLoader(),getJarFilenameFilter());
             }else{
                 customClassLoader = null;
             }
@@ -300,6 +304,15 @@ public class JoltTransformJSON extends AbstractProcessor {
             getLogger().error("Unable to setup processor",ex);
         }
 
+    }
+
+    protected FilenameFilter getJarFilenameFilter(){
+        return  new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return (name != null && name.endsWith(".jar"));
+            }
+        };
     }
 
 }

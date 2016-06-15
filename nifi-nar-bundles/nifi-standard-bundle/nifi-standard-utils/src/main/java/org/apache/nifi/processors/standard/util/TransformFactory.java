@@ -86,7 +86,7 @@ public class TransformFactory {
                     } else {
                         Map chainrEntryMap = (Map)chainrEntryObj;
                         String opString = (String) chainrEntryMap.get("operation");
-                        String operationClassName = null;
+                        String operationClassName;
 
                         if(opString == null) {
                             throw new SpecException("JOLT Chainr \'operation\' must implement Transform or ContextualTransform");

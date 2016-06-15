@@ -17,6 +17,9 @@
 
 package org.apache.nifi.web.standard.api.transformjson;
 
+import java.io.File;
+import java.io.FilenameFilter;
+
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -24,7 +27,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.nifi.processors.standard.util.StandardUtils;
+import org.apache.nifi.util.file.classloader.ClassLoaderUtils;
 import org.apache.nifi.processors.standard.util.TransformFactory;
 import org.apache.nifi.web.standard.api.AbstractStandardResource;
 import org.apache.nifi.web.standard.api.transformjson.dto.JoltSpecificationDTO;
@@ -91,7 +94,7 @@ public class TransformJSONResource extends AbstractStandardResource {
         Transform transform ;
 
         if(modules != null && !modules.isEmpty()){
-            customClassLoader = StandardUtils.getCustomClassLoader(specificationDTO.getModules(),this.getClass().getClassLoader());
+            customClassLoader = ClassLoaderUtils.getCustomClassLoader(specificationDTO.getModules(),this.getClass().getClassLoader(), getJarFilenameFilter());
         }
 
         if(transformName.equals("jolt-transform-custom")) {
@@ -104,6 +107,13 @@ public class TransformJSONResource extends AbstractStandardResource {
         return transform;
     }
 
-
+    protected FilenameFilter getJarFilenameFilter(){
+        return  new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return (name != null && name.endsWith(".jar"));
+            }
+        };
+    }
 
 }
