@@ -54,17 +54,8 @@ public class TransformJSONResource extends AbstractStandardResource {
     @Path("/validate")
     public Response validateSpec(JoltSpecificationDTO specificationDTO) {
 
-        Object specJson = getSpecificationJsonObject(specificationDTO.getSpecification());
-        String transform = specificationDTO.getTransform();
         try {
-
-            if(transform.equals("jolt-transform-custom")){
-                ClassLoader customClassLoader = StandardUtils.getCustomClassLoader(specificationDTO.getModules(),this.getClass().getClassLoader());
-                TransformFactory.getTransform(customClassLoader,specificationDTO.getCustomClass(), specJson);
-            }else {
-                TransformFactory.getTransform(specificationDTO.getTransform(), specJson);
-            }
-
+            getTransformation(specificationDTO);
         }catch(final Exception e){
             logger.error("Validation Failed - " + e.toString());
             return Response.ok(new ValidationDTO(false,"Validation Failed - Please verify the provided specification.")).build();
@@ -78,19 +69,8 @@ public class TransformJSONResource extends AbstractStandardResource {
     @Path("/execute")
     public Response executeSpec(JoltSpecificationDTO specificationDTO) {
 
-        Object specJson = getSpecificationJsonObject(specificationDTO.getSpecification());
-        String transformName = specificationDTO.getTransform();
-
         try {
-            Transform transform;
-
-            if(transformName.equals("jolt-transform-custom")) {
-                ClassLoader customClassLoader = StandardUtils.getCustomClassLoader(specificationDTO.getModules(),this.getClass().getClassLoader());
-                transform = TransformFactory.getTransform(customClassLoader,specificationDTO.getCustomClass(), specJson);
-            }else{
-                transform = TransformFactory.getTransform(specificationDTO.getTransform(), specJson);
-            }
-
+            Transform transform = getTransformation(specificationDTO);
             Object inputJson = JsonUtils.jsonToObject(specificationDTO.getInput());
             return Response.ok(JsonUtils.toJsonString(transform.transform(inputJson))).build();
 
@@ -99,6 +79,29 @@ public class TransformJSONResource extends AbstractStandardResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
 
+    }
+
+    protected Transform getTransformation(JoltSpecificationDTO specificationDTO) throws Exception{
+
+        Object specJson = getSpecificationJsonObject(specificationDTO.getSpecification());
+        String transformName = specificationDTO.getTransform();
+        String modules = specificationDTO.getModules();
+
+        ClassLoader customClassLoader = null;
+        Transform transform ;
+
+        if(modules != null && !modules.isEmpty()){
+            customClassLoader = StandardUtils.getCustomClassLoader(specificationDTO.getModules(),this.getClass().getClassLoader());
+        }
+
+        if(transformName.equals("jolt-transform-custom")) {
+            transform = TransformFactory.getCustomTransform(customClassLoader,specificationDTO.getCustomClass(), specJson);
+        }else{
+            transform = TransformFactory.getTransform(customClassLoader != null ?  customClassLoader : this.getClass().getClassLoader(),
+                        specificationDTO.getTransform(), specJson);
+        }
+
+        return transform;
     }
 
 

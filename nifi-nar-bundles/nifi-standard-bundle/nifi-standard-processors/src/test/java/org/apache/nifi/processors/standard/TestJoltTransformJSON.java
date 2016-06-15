@@ -318,6 +318,24 @@ public class TestJoltTransformJSON {
     }
 
     @Test
+    public void testTransformInputWithChainrEmbeddedCustomTransformation() throws IOException {
+        final TestRunner runner = TestRunners.newTestRunner(new JoltTransformJSON());
+        final String customJarPath = "src/test/resources/TestJoltTransformJson";
+        final String spec = new String(Files.readAllBytes(Paths.get("src/test/resources/TestJoltTransformJson/customChainrSpec.json")));
+        runner.setProperty(JoltTransformJSON.JOLT_SPEC,spec);
+        runner.setProperty(JoltTransformJSON.MODULES,customJarPath);
+        runner.enqueue(JSON_INPUT);
+        runner.run();
+        runner.assertAllFlowFilesTransferred(JoltTransformJSON.REL_SUCCESS);
+        final MockFlowFile transformed = runner.getFlowFilesForRelationship(JoltTransformJSON.REL_SUCCESS).get(0);
+        transformed.assertAttributeExists(CoreAttributes.MIME_TYPE.key());
+        transformed.assertAttributeEquals(CoreAttributes.MIME_TYPE.key(),"application/json");
+        Object transformedJson = JsonUtils.jsonToObject(new ByteArrayInputStream(transformed.toByteArray()));
+        Object compareJson = JsonUtils.jsonToObject(Files.newInputStream(Paths.get("src/test/resources/TestJoltTransformJson/chainrOutput.json")));
+        assertTrue(DIFFY.diff(compareJson, transformedJson).isEmpty());
+    }
+
+    @Test
     public void testTransformInputCustomTransformationIgnored() throws IOException {
         final TestRunner runner = TestRunners.newTestRunner(new JoltTransformJSON());
         final String customJarPath = "src/test/resources/TestJoltTransformJson/TestCustomJoltTransform.jar";

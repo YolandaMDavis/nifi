@@ -163,7 +163,7 @@ public class JoltTransformJSON extends AbstractProcessor {
         final String transform = validationContext.getProperty(JOLT_TRANSFORM).getValue();
         final String specValue = validationContext.getProperty(JOLT_SPEC).isSet() ? validationContext.getProperty(JOLT_SPEC).getValue() : null;
         final String customTransform = validationContext.getProperty(CUSTOM_CLASS).getValue();
-        final String modulePath = validationContext.getProperty(MODULES).getValue();
+        final String modulePath = validationContext.getProperty(MODULES).isSet()? validationContext.getProperty(MODULES).getValue() : null;
 
         if(StringUtils.isEmpty(specValue)){
             if(!SORTR.getValue().equals(transform)) {
@@ -175,29 +175,34 @@ public class JoltTransformJSON extends AbstractProcessor {
 
         } else {
 
+            ClassLoader customClassLoader = null;
             try {
+
+                if(modulePath != null) {
+                    customClassLoader = StandardUtils.getCustomClassLoader(modulePath, this.getClass().getClassLoader());
+                }
 
                 Object specJson = SORTR.getValue().equals(transform) ? null : JsonUtils.jsonToObject(specValue, DEFAULT_CHARSET);
 
                 if(CUSTOMR.getValue().equals(transform)){
 
-                    if(!StringUtils.isEmpty(customTransform) && modulePath == null){
+                    if(!StringUtils.isEmpty(customTransform) && customClassLoader == null){
                         final String customMessage = "One or more module directories containing the provided custom transformation must be specified.";
                         results.add(new ValidationResult.Builder().valid(false)
                                 .explanation(customMessage)
                                 .build());
-                    }else if (StringUtils.isEmpty(customTransform) && modulePath != null){
+                    }else if (StringUtils.isEmpty(customTransform) && customClassLoader != null){
                         final String customMessage = "A custom transformation should be specified with the provided module directories. ";
                         results.add(new ValidationResult.Builder().valid(false)
                                 .explanation(customMessage)
                                 .build());
                     }else{
-                        final ClassLoader customClassLoader = StandardUtils.getCustomClassLoader(modulePath, this.getClass().getClassLoader());
-                        TransformFactory.getTransform(customClassLoader, customTransform, specJson);
+                        TransformFactory.getCustomTransform(customClassLoader,customTransform, specJson);
                     }
 
                 }else {
-                    TransformFactory.getTransform(transform, specJson);
+                    TransformFactory.getTransform(customClassLoader != null? customClassLoader: this.getClass().getClassLoader() ,
+                                                  transform, specJson);
                 }
 
             } catch (final Exception e) {
@@ -250,9 +255,7 @@ public class JoltTransformJSON extends AbstractProcessor {
             return;
 
         }finally {
-            if(customClassLoader != null) {
-                Thread.currentThread().setContextClassLoader(originalContextClassLoader);
-            }
+            Thread.currentThread().setContextClassLoader(originalContextClassLoader);
         }
 
         FlowFile transformed = session.write(original, new OutputStreamCallback() {
@@ -272,24 +275,29 @@ public class JoltTransformJSON extends AbstractProcessor {
 
     @OnScheduled
     public void setup(final ProcessContext context) {
-        Object specJson = null;
-        if(context.getProperty(JOLT_SPEC).isSet() && !SORTR.getValue().equals(context.getProperty(JOLT_TRANSFORM).getValue())){
-            specJson = JsonUtils.jsonToObject(context.getProperty(JOLT_SPEC).getValue(), DEFAULT_CHARSET);
-        }
 
-        if(CUSTOMR.getValue().equals(context.getProperty(JOLT_TRANSFORM).getValue())){
+        try{
+            Object specJson = null;
 
-            try{
+            if(context.getProperty(MODULES).isSet()){
                 customClassLoader = StandardUtils.getCustomClassLoader(context.getProperty(MODULES).getValue(),this.getClass().getClassLoader());
-                transform = TransformFactory.getTransform(customClassLoader, context.getProperty(CUSTOM_CLASS).getValue(),specJson);
-            }
-            catch (Exception ex){
-                getLogger().error("Unable to setup processor",ex);
+            }else{
+                customClassLoader = null;
             }
 
-        }else{
-            customClassLoader = null;
-            transform = TransformFactory.getTransform(context.getProperty(JOLT_TRANSFORM).getValue(), specJson);
+            if(context.getProperty(JOLT_SPEC).isSet() && !SORTR.getValue().equals(context.getProperty(JOLT_TRANSFORM).getValue())){
+                specJson = JsonUtils.jsonToObject(context.getProperty(JOLT_SPEC).getValue(), DEFAULT_CHARSET);
+            }
+
+            if(CUSTOMR.getValue().equals(context.getProperty(JOLT_TRANSFORM).getValue())){
+                transform = TransformFactory.getCustomTransform(customClassLoader,context.getProperty(CUSTOM_CLASS).getValue(), specJson);
+            }else {
+                transform = TransformFactory.getTransform(customClassLoader != null? customClassLoader : this.getClass().getClassLoader(),
+                                                            context.getProperty(JOLT_TRANSFORM).getValue(), specJson);
+            }
+
+        } catch (Exception ex){
+            getLogger().error("Unable to setup processor",ex);
         }
 
     }
