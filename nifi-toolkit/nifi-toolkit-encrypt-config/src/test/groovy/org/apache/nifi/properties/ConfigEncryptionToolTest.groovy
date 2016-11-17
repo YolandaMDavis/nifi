@@ -2166,6 +2166,40 @@ class ConfigEncryptionToolTest extends GroovyTestCase {
     }
 
     @Test
+    void testSerializeLoginIdentityProvidersAndPreserveFormatForCommentedFile() {
+        // Arrange
+        String loginIdentityProvidersPath = "src/test/resources/login-identity-providers-commented.xml"
+        File loginIdentityProvidersFile = new File(loginIdentityProvidersPath)
+
+        File tmpDir = setupTmpDir()
+
+        File workingFile = new File("target/tmp/tmp-login-identity-providers.xml")
+        workingFile.delete()
+        Files.copy(loginIdentityProvidersFile.toPath(), workingFile.toPath())
+        ConfigEncryptionTool tool = new ConfigEncryptionTool()
+        tool.isVerbose = true
+
+        tool.keyHex = KEY_HEX_128
+
+        def lines = workingFile.readLines()
+        logger.info("Read lines: \n${lines.join("\n")}")
+
+        // Act
+        def encryptedLines = tool.encryptLoginIdentityProviders(lines.join("\n")).split("\n")
+        logger.info("Encrypted lines: \n${encryptedLines.join("\n")}")
+
+        // Assert
+
+        // If no sensitive properties are found, the original input text is just returned (comments and formatting in tact)
+        assert encryptedLines == lines
+
+        def serializedLines = ConfigEncryptionTool.serializeLoginIdentityProvidersAndPreserveFormat(encryptedLines.join("\n"),workingFile)
+
+        assert !serializedLines.empty
+
+    }
+
+    @Test
     void testShouldPerformFullOperationForLoginIdentityProviders() {
         // Arrange
         exit.expectSystemExitWithStatus(0)

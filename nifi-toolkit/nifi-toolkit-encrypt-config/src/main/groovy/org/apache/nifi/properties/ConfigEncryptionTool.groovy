@@ -687,8 +687,6 @@ class ConfigEncryptionTool {
         out.toString().split("\n")
     }
 
-
-    private
     static List<String> serializeLoginIdentityProvidersAndPreserveFormat(String xmlContent, File originalLoginIdentityProvidersFile) {
        def parsedXml = new XmlSlurper().parseText(xmlContent)
         def provider = parsedXml.provider.find { it.identifier == "ldap-provider" }
