@@ -45,6 +45,11 @@
             <outputDirectory>conf/</outputDirectory>
             <fileMode>0600</fileMode>
         </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/src/main/resources/rules</directory>
+            <outputDirectory>upgrade/rules/</outputDirectory>
+            <fileMode>0600</fileMode>
+        </fileSet>
         <!--<fileSet>-->
             <!--<directory>${project.build.directory}/nifi-resources/src/main/resources/conf</directory>-->
             <!--<outputDirectory>conf/</outputDirectory>-->
