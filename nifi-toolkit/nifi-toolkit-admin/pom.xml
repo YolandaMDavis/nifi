@@ -174,13 +174,13 @@ language governing permissions and limitations under the License. -->
                 <configuration>
                     <excludes combine.children="append">
                         <exclude>src/test/resources/conf/nifi.properties</exclude>
-                        <exclude>src/test/resources/external_conf/nifi.properties</exclude>
+                        <exclude>src/test/resources/external/conf/nifi.properties</exclude>
                         <exclude>src/test/resources/filemanager/myid</exclude>
                         <exclude>src/test/resources/filemanager/nifi.properties</exclude>
-                        <exclude>src/test/resources/upgrade.upgrade_conf/nifi.properties</exclude>
-                        <exclude>src/test/resources/upgrade.upgrade_conf/login-identity-providers.xml</exclude>
-                        <exclude>src/test/resources/no_rules_upgrade_conf/nifi.properties</exclude>
-                        <exclude>src/test/resources/no_rules_upgrade_conf/login-identity-providers.xml</exclude>
+                        <exclude>src/test/resources/upgrade/conf/nifi.properties</exclude>
+                        <exclude>src/test/resources/upgrade/conf/login-identity-providers.xml</exclude>
+                        <exclude>src/test/resources/no_rules/conf/nifi.properties</exclude>
+                        <exclude>src/test/resources/no_rules/conf/login-identity-providers.xml</exclude>
                     </excludes>
                 </configuration>
             </plugin>
