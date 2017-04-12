@@ -33,7 +33,7 @@ goto startConfig
 :startConfig
 set LIB_DIR=%~sdp0..\upgrade;%~sdp0..\lib
 
-SET JAVA_PARAMS=-cp %LIB_DIR%\* -Xms12m -Xmx24m %JAVA_ARGS% org.apache.nifi.toolkit.upgrade.UpgradeTool
+SET JAVA_PARAMS=-cp %LIB_DIR%\* -Xms12m -Xmx24m %JAVA_ARGS% org.apache.nifi.toolkit.admin.UpgradeTool
 
 cmd.exe /C ""%JAVA_EXE%" %JAVA_PARAMS% %* ""
 

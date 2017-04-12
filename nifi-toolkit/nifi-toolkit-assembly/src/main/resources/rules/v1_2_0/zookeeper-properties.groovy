@@ -16,8 +16,8 @@
  */
 package rules.v1_2_0
 
-import org.apache.nifi.toolkit.upgrade.configmigrator.rules.PropertyMigrationRule
-import org.apache.nifi.toolkit.upgrade.util.Version
+import org.apache.nifi.toolkit.admin.configmigrator.rules.PropertyMigrationRule
+import org.apache.nifi.toolkit.admin.util.Version
 
 class ZookeeperPropertiesRule extends PropertyMigrationRule{
 

@@ -111,7 +111,7 @@ run() {
    export NIFI_TOOLKIT_HOME="$NIFI_TOOLKIT_HOME"
 
    umask 0077
-   "${JAVA}" -cp "${CLASSPATH}" -Xms12m -Xmx24m org.apache.nifi.toolkit.upgrade.notify.NotificationTool "$@"
+   "${JAVA}" -cp "${CLASSPATH}" -Xms12m -Xmx24m org.apache.nifi.toolkit.admin.notify.NotificationTool "$@"
    return $?
 }
 

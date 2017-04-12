@@ -33,7 +33,7 @@ goto startConfig
 :startConfig
 set LIB_DIR=%~dp0..\upgrade;%~dp0..\lib
 
-SET JAVA_PARAMS=-cp %LIB_DIR%\* -Xms12m -Xmx24m %JAVA_ARGS% org.apache.nifi.toolkit.upgrade.nodemanager.NodeManagerTool
+SET JAVA_PARAMS=-cp %LIB_DIR%\* -Xms12m -Xmx24m %JAVA_ARGS% org.apache.nifi.toolkit.admin.nodemanager.NodeManagerTool
 
 cmd.exe /C ""%JAVA_EXE%" %JAVA_PARAMS% %* ""
 
