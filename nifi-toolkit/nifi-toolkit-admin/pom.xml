@@ -20,7 +20,7 @@ language governing permissions and limitations under the License. -->
 
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>nifi-toolkit-upgrade</artifactId>
+    <artifactId>nifi-toolkit-admin</artifactId>
 
     <dependencies>
         <dependency>

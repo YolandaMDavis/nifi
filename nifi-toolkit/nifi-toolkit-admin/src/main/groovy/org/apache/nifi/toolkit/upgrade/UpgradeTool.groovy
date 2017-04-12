@@ -212,7 +212,7 @@ public class UpgradeTool extends AbstractUpgradeTool{
 
         try {
             notify(message.toString(),"WARN",nifiLinkName, bootstrapConfName)
-            if (notifyTime != null && notifyTime < 0) {
+            if (notifyTime != null && notifyTime > 0) {
                 Thread.sleep(notifyTime * 1000)
             }
         }catch(Exception ex){
