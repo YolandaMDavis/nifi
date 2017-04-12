@@ -20,7 +20,7 @@ package org.apache.nifi.toolkit.admin.nodemanager
 import com.sun.jersey.api.client.Client
 import com.sun.jersey.api.client.ClientResponse
 import com.sun.jersey.api.client.WebResource
-import org.apache.nifi.toolkit.admin.AbstractUpgradeTool
+import org.apache.nifi.toolkit.admin.AbstractAdminTool
 import org.apache.nifi.toolkit.admin.client.NiFiClientUtil
 import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.DefaultParser
@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory
 
 import java.nio.file.Paths
 
-public class NodeManagerTool extends AbstractUpgradeTool {
+public class NodeManagerTool extends AbstractAdminTool {
 
     private static final String DEFAULT_DESCRIPTION = "This tool is used to manage nodes within a cluster. Supported functionality will remove node from cluster. "
     private static final String HELP_ARG = "help"

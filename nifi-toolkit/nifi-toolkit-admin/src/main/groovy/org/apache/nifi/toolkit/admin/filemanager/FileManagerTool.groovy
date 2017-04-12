@@ -34,7 +34,7 @@ import org.apache.commons.compress.utils.IOUtils
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.lang3.SystemUtils
-import org.apache.nifi.toolkit.admin.AbstractUpgradeTool
+import org.apache.nifi.toolkit.admin.AbstractAdminTool
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -43,7 +43,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.attribute.PosixFilePermission
 
-public class FileManagerTool extends AbstractUpgradeTool{
+public class FileManagerTool extends AbstractAdminTool{
 
     private static final String DEFAULT_DESCRIPTION = "This tool is used to perform backup, install and restore activities for a NiFi node. "
     private static final String HELP_ARG = "help"

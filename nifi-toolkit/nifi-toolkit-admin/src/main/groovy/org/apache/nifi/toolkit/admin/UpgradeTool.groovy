@@ -46,7 +46,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.concurrent.TimeUnit
 
-public class UpgradeTool extends AbstractUpgradeTool{
+public class UpgradeTool extends AbstractAdminTool{
 
     private static final String DEFAULT_DESCRIPTION = "This tool is used to upgrade or rollback a nifi instance in standalone or cluster mode "
     private static final String HELP_ARG = "help"

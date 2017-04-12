@@ -2,7 +2,7 @@ package org.apache.nifi.toolkit.admin.util
 
 import spock.lang.Specification
 
-class UpgradeUtilSpec  extends Specification{
+class AdminUtilSpec extends Specification{
 
     def "get nifi version with version in properties"(){
 
@@ -13,7 +13,7 @@ class UpgradeUtilSpec  extends Specification{
 
         when:
 
-        def version = UpgradeUtil.getNiFiVersion(nifiConfDir,nifiLibDir)
+        def version = AdminUtil.getNiFiVersion(nifiConfDir,nifiLibDir)
 
         then:
         version == "1.1.0"
@@ -28,7 +28,7 @@ class UpgradeUtilSpec  extends Specification{
 
         when:
 
-        def version = UpgradeUtil.getNiFiVersion(nifiConfDir,nifiLibDir)
+        def version = AdminUtil.getNiFiVersion(nifiConfDir,nifiLibDir)
 
         then:
         version == "1.2.0"

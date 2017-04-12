@@ -28,7 +28,7 @@ import org.apache.commons.cli.Option
 import org.apache.commons.cli.Options
 import org.apache.commons.cli.ParseException
 import org.apache.nifi.properties.NiFiPropertiesLoader
-import org.apache.nifi.toolkit.admin.AbstractUpgradeTool
+import org.apache.nifi.toolkit.admin.AbstractAdminTool
 import org.apache.nifi.toolkit.admin.client.ClientFactory
 import org.apache.nifi.toolkit.admin.client.NiFiClientFactory
 import org.apache.nifi.util.NiFiProperties
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory
 
 import java.nio.file.Paths
 
-public class NotificationTool extends AbstractUpgradeTool {
+public class NotificationTool extends AbstractAdminTool {
 
     private static final String DEFAULT_DESCRIPTION = "This tool is used to send notifications (bulletins) to a NiFi cluster. "
     private static final String HELP_ARG = "help"

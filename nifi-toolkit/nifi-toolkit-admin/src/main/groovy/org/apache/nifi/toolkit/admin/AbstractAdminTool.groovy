@@ -1,6 +1,6 @@
 package org.apache.nifi.toolkit.admin
 
-import org.apache.nifi.toolkit.admin.util.UpgradeUtil
+import org.apache.nifi.toolkit.admin.util.AdminUtil
 import org.apache.commons.cli.HelpFormatter
 import org.apache.commons.cli.Options
 import org.apache.commons.lang3.SystemUtils
@@ -10,7 +10,7 @@ import org.slf4j.Logger
 import java.nio.file.Path
 import java.nio.file.Paths
 
-public abstract class AbstractUpgradeTool {
+public abstract class AbstractAdminTool {
 
     protected static final String JAVA_HOME = "JAVA_HOME"
     protected static final String NIFI_TOOLKIT_HOME = "NIFI_TOOLKIT_HOME"
@@ -68,7 +68,7 @@ public abstract class AbstractUpgradeTool {
     Boolean supportedNiFiMinimumVersion(final String nifiConfDirName, final String nifiLibDirName, final String supportedMinimumVersion){
         final File nifiConfDir = new File(nifiConfDirName)
         final File nifiLibDir = new File (nifiLibDirName)
-        final String versionStr = UpgradeUtil.getNiFiVersion(nifiConfDir,nifiLibDir)
+        final String versionStr = AdminUtil.getNiFiVersion(nifiConfDir,nifiLibDir)
 
         if(!StringUtils.isEmpty(versionStr)){
             Version version = new Version(versionStr,".")

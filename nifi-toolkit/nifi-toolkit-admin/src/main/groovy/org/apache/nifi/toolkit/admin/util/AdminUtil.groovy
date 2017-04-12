@@ -4,7 +4,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.archivers.zip.ZipFile
 import org.apache.commons.lang3.StringUtils
 
-class UpgradeUtil {
+class AdminUtil {
 
     protected static String getNiFiVersionFromNar(final File nifiLibDir){
 

@@ -19,8 +19,8 @@ package org.apache.nifi.toolkit.admin.configmigrator
 
 import com.google.common.collect.Lists
 import com.google.common.io.Files
-import org.apache.nifi.toolkit.admin.AbstractUpgradeTool
-import org.apache.nifi.toolkit.admin.util.UpgradeUtil
+import org.apache.nifi.toolkit.admin.AbstractAdminTool
+import org.apache.nifi.toolkit.admin.util.AdminUtil
 import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.Option
@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory
 
 import java.nio.file.Paths
 
-public class ConfigMigrationTool extends AbstractUpgradeTool{
+public class ConfigMigrationTool extends AbstractAdminTool{
 
     private static
     final String DEFAULT_DESCRIPTION = "This tool is used to update nifi configurations (including properties, configuration and xml files)." +
@@ -143,8 +143,8 @@ public class ConfigMigrationTool extends AbstractUpgradeTool{
 
     void run(final File nifiConfDir, final File nifiLibDir,final File nifiUpgradeConfigDir, final File nifiUpgradeLibDir) {
 
-        final String nifiCurrentVersion = UpgradeUtil.getNiFiVersion(nifiConfDir,nifiLibDir)
-        final String nifiUpgradeVersion = UpgradeUtil.getNiFiVersion(nifiUpgradeConfigDir,nifiUpgradeLibDir)
+        final String nifiCurrentVersion = AdminUtil.getNiFiVersion(nifiConfDir,nifiLibDir)
+        final String nifiUpgradeVersion = AdminUtil.getNiFiVersion(nifiUpgradeConfigDir,nifiUpgradeLibDir)
 
         if (nifiCurrentVersion == null) {
             throw new IllegalArgumentException("Could not determine current nifi version")
